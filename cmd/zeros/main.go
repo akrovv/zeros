@@ -2,9 +2,9 @@ package main
 
 import (
 	"github.com/akrovv/zeros/analyzer"
-	"golang.org/x/tools/go/analysis/singlechecker"
+	"golang.org/x/tools/go/analysis"
 )
 
-func main() {
-	singlechecker.Main(analyzer.New())
+func New(conf any) ([]*analysis.Analyzer, error) {
+	return []*analysis.Analyzer{analyzer.New()}, nil
 }

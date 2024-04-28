@@ -26,5 +26,6 @@ var user User
 
 ### How to start
 * git clone __[link]__
-* go build cmd/zeros/main.go
-* ./main __[source code]__
+* go build -buildmode=plugin cmd/zeros/main.go
+* __[!!! you need compiled file from https://github.com/golangci/golangci-lint (make build)]__
+* ./golangci-lint -c golangci.yml run __[source code]__
