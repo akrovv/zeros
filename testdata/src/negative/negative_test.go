@@ -12,4 +12,7 @@ func TestWithZeroValueStruct(t *testing.T) {
 
 	u := User{}
 	_ = fmt.Sprint(u)
+
+	h := new(User)
+	_ = fmt.Sprint(h)
 }
