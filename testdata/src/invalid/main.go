@@ -2,17 +2,18 @@ package invalid
 
 import (
 	"fmt"
-	"testing"
 )
 
-func TestWithZeroValueStruct(t *testing.T) {
-	type User struct {
-		Name string
-	}
+type user struct {
+	Name string
+}
 
-	u := User{}
+func zeroValue() {
+	u := user{}
 	_ = fmt.Sprint(u)
+}
 
-	h := new(User)
-	_ = fmt.Sprint(h)
+func allocationWithNew() {
+	u := new(user)
+	_ = fmt.Sprint(u)
 }

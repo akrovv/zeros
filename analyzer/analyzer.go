@@ -7,11 +7,6 @@ import (
 	"golang.org/x/tools/go/analysis"
 )
 
-//nolint:gochecknoglobals
-var (
-	skipForTest bool
-)
-
 func New() *analysis.Analyzer {
 	return &analysis.Analyzer{
 		Name: "zeros",
@@ -23,10 +18,6 @@ func New() *analysis.Analyzer {
 func run(pass *analysis.Pass) (interface{}, error) {
 	for _, f := range pass.Files {
 		ast.Inspect(f, func(node ast.Node) bool {
-			if skipForTest {
-				return true
-			}
-
 			switch n := node.(type) {
 			case *ast.AssignStmt:
 				checkForAssignZeroValue(pass, n)

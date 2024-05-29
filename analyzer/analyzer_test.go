@@ -1,40 +1,45 @@
 package analyzer
 
 import (
+	"fmt"
 	"golang.org/x/tools/go/analysis/analysistest"
 	"os"
 	"path/filepath"
+	"slices"
 	"testing"
 )
 
-func TestAll(t *testing.T) {
-	wd, err := os.Getwd()
-	if err != nil {
-		panic(err)
-	}
-
-	testdata := filepath.Join(filepath.Dir(wd), "testdata")
-	analysistest.Run(t, testdata, New(), "tests")
+func TestValidCodeAnalysis(t *testing.T) {
+	analysistest.Run(t, testdataDir(), New(), "valid")
 }
 
-func TestNegative(t *testing.T) {
-	wd, err := os.Getwd()
-	if err != nil {
-		panic(err)
+func TestInvalidCodeAnalysis(t *testing.T) {
+	wantErrs := []string{
+		"invalid/main.go:12:2: unexpected diagnostic: zero value struct is found",
+		"invalid/main.go:17:7: unexpected diagnostic: using the new found",
 	}
+	var gotErrs []string
 
-	skipForTest = true
+	analysistest.Run(lintErrors{&gotErrs}, testdataDir(), New(), "invalid")
 
-	testdata := filepath.Join(filepath.Dir(wd), "testdata")
-	analysistest.Run(t, testdata, New(), "negative")
+	slices.Sort(gotErrs)
+	if !slices.Equal(wantErrs, gotErrs) {
+		t.Fatalf("want: %v, got: %v", wantErrs, gotErrs)
+	}
 }
 
-func Test_Te(t *testing.T) {
+func testdataDir() string {
 	wd, err := os.Getwd()
 	if err != nil {
 		panic(err)
 	}
+	return filepath.Join(filepath.Dir(wd), "testdata")
+}
 
-	testdata := filepath.Join(filepath.Dir(wd), "testdata")
-	analysistest.Run(t, testdata, New(), "te")
+type lintErrors struct {
+	Msgs *[]string
+}
+
+func (a lintErrors) Errorf(format string, args ...interface{}) {
+	*a.Msgs = append(*a.Msgs, fmt.Sprintf(format, args...))
 }

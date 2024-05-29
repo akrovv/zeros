@@ -1,15 +1,14 @@
-package tests
+package valid
 
 import (
 	"fmt"
-	"testing"
 )
 
-func TestWithoutZeroValueStruct(t *testing.T) {
-	type User struct {
-		Name string
-	}
+type user struct {
+	Name string
+}
 
-	u := User{Name: "Artyom"}
+func withoutZeroValue() {
+	u := user{Name: "Artyom"}
 	_ = fmt.Sprint(u)
 }
