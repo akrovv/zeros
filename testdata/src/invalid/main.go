@@ -11,6 +11,9 @@ type user struct {
 func zeroValue() {
 	u := user{}
 	_ = fmt.Sprint(u)
+
+	var uu = user{}
+	_ = fmt.Sprint(uu)
 }
 
 func allocationWithNew() {

@@ -15,8 +15,9 @@ func TestValidCodeAnalysis(t *testing.T) {
 
 func TestInvalidCodeAnalysis(t *testing.T) {
 	wantErrs := []string{
-		"invalid/main.go:12:2: unexpected diagnostic: zero value struct is found",
-		"invalid/main.go:17:7: unexpected diagnostic: using the new found",
+		"invalid/main.go:12:7: unexpected diagnostic: zero value struct is found",
+		"invalid/main.go:15:11: unexpected diagnostic: zero value struct is found",
+		"invalid/main.go:20:7: unexpected diagnostic: using the new found",
 	}
 	var gotErrs []string
 

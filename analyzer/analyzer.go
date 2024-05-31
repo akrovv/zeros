@@ -23,6 +23,8 @@ func run(pass *analysis.Pass) (interface{}, error) {
 				checkForAssignZeroValue(pass, n)
 			case *ast.CallExpr:
 				checkForAllocationWithNew(pass, n)
+			case *ast.GenDecl:
+				checkForVarAssignZeroValue(pass, n)
 			}
 
 			return true
@@ -42,20 +44,44 @@ func checkForAllocationWithNew(pass *analysis.Pass, be *ast.CallExpr) {
 }
 
 func checkForAssignZeroValue(pass *analysis.Pass, be *ast.AssignStmt) {
-	if be.Tok != token.DEFINE {
+	if be.Tok != token.DEFINE && be.Tok != token.ASSIGN {
 		return
 	}
 
 	for _, r := range be.Rhs {
-		if ident, ok := r.(*ast.CompositeLit); !ok || len(ident.Elts) != 0 {
-			return
+		checkCompositeLit(pass, r)
+	}
+}
+
+func checkForVarAssignZeroValue(pass *analysis.Pass, be *ast.GenDecl) {
+	if be.Tok != token.VAR {
+		return
+	}
+
+	for _, spec := range be.Specs {
+		valueSpec, ok := spec.(*ast.ValueSpec)
+		if !ok {
+			continue
 		}
+
+		for _, value := range valueSpec.Values {
+			checkCompositeLit(pass, value)
+		}
+	}
+}
+
+func checkCompositeLit(pass *analysis.Pass, expr ast.Expr) {
+	cl, ok := expr.(*ast.CompositeLit)
+	if !ok || len(cl.Elts) > 0 {
+		return
 	}
 
 	pass.Report(analysis.Diagnostic{
-		Pos:     be.Pos(),
+		Pos:     cl.Pos(),
 		Message: "zero value struct is found",
 	})
+
+	return
 }
 
 func isBuiltin(ident *ast.Ident, info *types.Info) bool {
